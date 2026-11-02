@@ -1,0 +1,36 @@
+@Software.Api_HostAddress = https://localhost:9000
+@Identity_HostAddress = http://localhost:9069/software
+
+GET {{Software.Api_HostAddress}}/status
+Accept: application/json
+
+###
+
+# Get a token from the mock OAuth2 server, which is running in the AppHost.
+# "code" isn't really part of this grant. It's what the mock's config matches on to
+# decide who you are: alice, earl, mary or sue (AppHost/MockOauth2/settings/config.json).
+# mary and sue are managers, earl isn't, and alice has no roles.
+# @name login
+POST {{Identity_HostAddress}}/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&client_id=software&client_secret=secret&code=mary
+
+###
+
+# Run the login request above first. Change its code to see a 403.
+POST {{Software.Api_HostAddress}}/vendors
+Authorization: Bearer {{login.response.body.$.access_token}}
+Content-Type: application/json
+
+{
+  "name": "Hypertheory",
+  "url": "https://www.hypertheory.com",
+  "pointOfContact": {
+    "name": "Stacey",
+    "email": "stacey@example.com",
+    "phone": "555-1212"
+  }
+}
+
+###
