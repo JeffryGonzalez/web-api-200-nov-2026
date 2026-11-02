@@ -19,8 +19,8 @@ var scalar = builder.AddScalarApiReference(options =>
 {
     options.PreferHttpsEndpoint = true;
     options.AllowSelfSignedCertificates = true;
-    
-});
+
+}).WithHttpEndpoint(port: 9099, name: "http");
 
 
 var softwareApi = builder.AddProject<Projects.Software_Api>("software-api")

@@ -19,12 +19,13 @@ grant_type=client_credentials&client_id=software&client_secret=secret&code=mary
 ###
 
 # Run the login request above first. Change its code to see a 403.
+# @name newVendor
 POST {{Software.Api_HostAddress}}/vendors
 Authorization: Bearer {{login.response.body.$.access_token}}
 Content-Type: application/json
 
 {
-  "name": "Hypertheory",
+  "name": "Oracle",
   "url": "https://www.hypertheory.com",
   "pointOfContact": {
     "name": "Stacey",
@@ -35,8 +36,118 @@ Content-Type: application/json
 
 ###
 
-GET {{Software.Api_HostAddress}}/vendors/3e75d2ef-4462-470e-af17-9e81d91256e5
-If-None-Match: "01a19df4-d04d-4903-9d3b-414b3a85ccaf"
+# Send this twice, and you get the same vendor both times. Without the header you get two.
+# The key becomes the vendor's id, so use a new GUID for a new vendor.
+POST {{Software.Api_HostAddress}}/vendors
+Authorization: Bearer {{login.response.body.$.access_token}}
+Idempotency-Key: 7d3f6a52-1c44-4b7e-9a31-5e0c2f8b6d10
+Content-Type: application/json
 
+{
+  "name": "Sent Twice",
+  "url": "https://www.hypertheory.com",
+  "pointOfContact": {
+    "name": "Stacey",
+    "email": "stacey@example.com",
+    "phone": "555-1212"
+  }
+}
 
-### Modify the Point of Contact
+###
+
+# Leave things out, and every problem comes back named, in one format.
+POST {{Software.Api_HostAddress}}/vendors
+Authorization: Bearer {{login.response.body.$.access_token}}
+Content-Type: application/json
+
+{
+  "name": "Hypertheory",
+  "pointOfContact": { "name": "Stacey" }
+}
+
+###
+
+# Run the request above first. Read the vendor, and get its ETag.
+# @name getVendor
+GET {{Software.Api_HostAddress}}{{newVendor.response.headers.Location}}
+
+###
+
+# Send this twice. The second one gets a 412, because the first changed the version.
+PUT {{Software.Api_HostAddress}}{{newVendor.response.headers.Location}}/point-of-contact
+Authorization: Bearer {{login.response.body.$.access_token}}
+If-Match: "{{getVendor.response.headers.ETag}}"
+Content-Type: application/json
+
+{
+  "name": "Jill",
+  "email": "jill@example.com"
+}
+
+###
+
+# You already have this version, so there's nothing to send.
+GET {{Software.Api_HostAddress}}{{newVendor.response.headers.Location}}
+If-None-Match: "{{getVendor.response.headers.ETag}}"
+
+###
+
+# Run the login request as sue. Only the person who created a vendor can delete it.
+# @name loginSue
+POST {{Identity_HostAddress}}/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&client_id=software&client_secret=secret&code=sue
+
+###
+
+# Expect a 403. Sue didn't create this vendor.
+DELETE {{Software.Api_HostAddress}}{{newVendor.response.headers.Location}}
+Authorization: Bearer {{login.response.body.$.access_token}}
+If-Match: "{{getVendor.response.headers.ETag}}"
+
+###
+
+# Run getVendor again first, for the current ETag. Expect a 204, then a 404 if you send it twice.
+DELETE {{Software.Api_HostAddress}}{{newVendor.response.headers.Location}}
+Authorization: Bearer {{login.response.body.$.access_token}}
+If-Match: {{getVendor.response.headers.ETag}}
+
+###
+
+###
+
+# Which handler runs? Which of these 404s came from your code?
+GET {{Software.Api_HostAddress}}/staff/mary
+
+###
+
+GET {{Software.Api_HostAddress}}/staff/S-1042
+
+###
+
+GET {{Software.Api_HostAddress}}/staff/S-9999
+
+###
+
+GET {{Software.Api_HostAddress}}/staff/S-12
+
+###
+
+# What's on the wire? Compare these two, then compare them with /openapi/v1.json.
+GET {{Software.Api_HostAddress}}/licenses
+
+###
+
+GET {{Software.Api_HostAddress}}/status
+
+###
+
+POST {{Software.Api_HostAddress}}/licenses
+Content-Type: application/json
+
+{
+  "product": "Rider",
+  "type": "Site",
+  "expires": "2027-01-01"
+}

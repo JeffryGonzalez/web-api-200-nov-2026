@@ -26,9 +26,25 @@ public static class VendorEndpoints
         return routes;
     }
 
-    private static async Task<NoContent> DeleteAsync(Guid id, IDocumentSession session)
+    private static async Task<Results<NoContent, StatusCodeHttpResult>> DeleteAsync(Guid id, IDocumentSession session,
+        [FromHeader(Name ="If-Match")] string? ifMatch,
+        ILookupRequestingUsers userLookups
+        )
     {
+
+        if(ifMatch is null)
+        {
+            return TypedResults.StatusCode(StatusCodes.Status428PreconditionRequired);
+        }
         // only the person that created it can delete it - otherwise 403
+        var vendor = await session.LoadAsync<VendorEntity>(id);
+
+        if (ifMatch.Trim('"') != ETagFor(vendor))
+        {
+            return TypedResults.StatusCode(StatusCodes.Status412PreconditionFailed);
+        }
+        session.Delete(vendor);
+        await session.SaveChangesAsync();
         return TypedResults.NoContent();
     }
 
