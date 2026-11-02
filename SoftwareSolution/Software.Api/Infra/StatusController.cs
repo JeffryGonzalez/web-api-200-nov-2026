@@ -9,6 +9,7 @@ public class StatusController : ControllerBase
     [HttpGet("/status")]
     public async Task<ActionResult> GetTheStatus()
     {
+      
         var response = new StatusResponseMessage
         {
             Status = "Awesome, all system go!",

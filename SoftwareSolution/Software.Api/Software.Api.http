@@ -34,3 +34,9 @@ Content-Type: application/json
 }
 
 ###
+
+GET {{Software.Api_HostAddress}}/vendors/3e75d2ef-4462-470e-af17-9e81d91256e5
+If-None-Match: "01a19df4-d04d-4903-9d3b-414b3a85ccaf"
+
+
+### Modify the Point of Contact

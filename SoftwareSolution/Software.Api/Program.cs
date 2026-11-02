@@ -4,6 +4,7 @@ using Software.Api.Vendors;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddValidation();
 builder.AddServiceDefaults(); // ServiceDefaults Extension
 builder.Services.AddSingleton<TimeProvider>(sp => TimeProvider.System);
 builder.Services.AddScoped<ILookupRequestingUsers, HttpContextRequestingUserLookup>();
@@ -22,14 +23,16 @@ builder.Services.AddAuthorizationBuilder().AddPolicy("SoftwareCenterManager", po
     policy.RequireRole("Manager");
 });
 
-var connectionString = builder.Configuration.GetConnectionString("software") ?? throw new Exception("No Connection String");
+builder.AddNpgsqlDataSource("software");
+//var connectionString = builder.Configuration.GetConnectionString("software") ?? throw new Exception("No Connection String");
 
 builder.Services.AddMarten(options =>
 {
-    options.Connection(connectionString);
+    //options.Connection(connectionString);
     // add an IDocumentStore to the "services collection", and a "singleton" service to manage connections.
 
-}).UseLightweightSessions();
+}).UseLightweightSessions()
+.UseNpgsqlDataSource();
 // appsetting.json
 
 // Add services to the container.
