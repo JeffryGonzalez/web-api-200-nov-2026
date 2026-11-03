@@ -1,0 +1,75 @@
+@Software.Api_HostAddress = https://localhost:9000
+@Identity_HostAddress = http://localhost:9069/software
+
+
+###
+
+# Get a token from the mock OAuth2 server, which is running in the AppHost.
+# "code" isn't really part of this grant. It's what the mock's config matches on to
+# decide who you are: alice, earl, mary or sue (AppHost/MockOauth2/settings/config.json).
+# mary and sue are managers, earl isn't, and alice has no roles.
+# @name login
+POST {{Identity_HostAddress}}/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&client_id=software&client_secret=secret&code=mary
+
+### 
+# Add a vendor.
+# @name newVendor
+POST {{Software.Api_HostAddress}}/vendors
+Authorization: Bearer {{login.response.body.$.access_token}}
+Content-Type: application/json
+
+{
+  "name": "Hypertheory",
+  "url": "https://www.hypertheory.com",
+  "pointOfContact": { "name": "Stacey" }
+}
+
+###
+
+# @name getVendor
+GET {{Software.Api_HostAddress}}{{newVendor.response.headers.Location}}
+
+###
+
+PUT {{Software.Api_HostAddress}}{{newVendor.response.headers.Location}}/point-of-contact
+Authorization: Bearer {{login.response.body.$.access_token}}
+If-Match: "{{getVendor.response.headers.ETag}}"
+Content-Type: application/json
+
+{
+  "name": "Jill",
+  "email": "jill@example.com"
+}
+
+###
+GET {{Software.Api_HostAddress}}{{newVendor.response.headers.Location}}
+If-None-Match: "{{getVendor.response.headers.ETag}}"
+
+###
+
+# @name loginSue
+POST {{Identity_HostAddress}}/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&client_id=software&client_secret=secret&code=sue
+
+###
+
+# As sue
+# Will fail auth
+DELETE {{Software.Api_HostAddress}}{{newVendor.response.headers.Location}}
+Authorization: Bearer {{loginSue.response.body.$.access_token}}
+If-Match: "{{getVendor.response.headers.ETag}}"
+
+###
+
+# As mary
+# Will fail precondition, because the ETag is stale.
+DELETE {{Software.Api_HostAddress}}{{newVendor.response.headers.Location}}
+Authorization: Bearer {{login.response.body.$.access_token}}
+If-Match: "{{getVendor.response.headers.ETag}}"
+
+###

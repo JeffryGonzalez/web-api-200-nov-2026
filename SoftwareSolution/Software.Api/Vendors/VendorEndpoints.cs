@@ -1,8 +1,10 @@
 ﻿using JasperFx;
+using JasperFx.CodeGeneration.Frames;
 using Marten;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Software.Api.Vendors.Operations;
+using System.Reflection;
 
 namespace Software.Api.Vendors;
 
@@ -21,7 +23,18 @@ public static class VendorEndpoints
         vendors.MapGet("", GetCollection.GetVendorsAsync);
 
         vendorManagersEndpoints.MapPost("", AddVendorAsync);
-        vendorManagersEndpoints.MapDelete("/{id:guid}", DeleteAsync);
+        vendorManagersEndpoints.MapDelete("/{id:guid}", DeleteAsync).AddEndpointFilter(async (context, next) =>
+        {
+            if (!context.HttpContext.Request.Headers.TryGetValue("If-Match", out var ifMatch))
+            {
+                context.HttpContext.Response.StatusCode = StatusCodes.Status428PreconditionRequired;
+                return Results.StatusCode(StatusCodes.Status428PreconditionRequired);
+            }
+  
+            
+
+            return await   next(context);
+        });
         vendorManagersEndpoints.MapPut("/{id:guid}/point-of-contact", ReplacePointOfContactAsync);
         return routes;
     }
@@ -38,6 +51,15 @@ public static class VendorEndpoints
         }
         // only the person that created it can delete it - otherwise 403
         var vendor = await session.LoadAsync<VendorEntity>(id);
+        // if the vendor does not exist, what should we return?
+        if(vendor is null)
+        {
+            return TypedResults.NoContent();
+        }
+        if(vendor.CreatedBy != userLookups.GetRequestingUserId())
+        {
+            return TypedResults.StatusCode(StatusCodes.Status403Forbidden);
+        }
 
         if (ifMatch.Trim('"') != ETagFor(vendor))
         {
@@ -111,7 +133,8 @@ public static class VendorEndpoints
 
     private static async Task<Results<Ok<VendorDetailsModel>, NotFound, StatusCodeHttpResult>> GetByIdAsync(
     Guid id,
-    [FromHeader(Name = "If-None-Match")] string? ifNoneMatch,
+    //[FromHeader(Name = "If-None-Match")] string? ifNoneMatch,
+    EtagParam ifNoneMatch,
     HttpResponse httpResponse,
     IDocumentSession session)
     {
@@ -125,7 +148,7 @@ public static class VendorEndpoints
             return TypedResults.NotFound();
         }
 
-        if (ifNoneMatch == ETagFor(saved))
+        if (ifNoneMatch.ETag == ETagFor(saved))
         {
             return TypedResults.StatusCode(StatusCodes.Status304NotModified); // Yours is good, yo! cool.
         }
@@ -142,3 +165,17 @@ public static class VendorEndpoints
     private static string ETagFor(VendorEntity vendor) => $"{vendor.Version}";
 
 }
+
+public class EtagParam : IBindableFromHttpContext<EtagParam>
+{
+    public string? ETag { get; set; }
+
+    public static ValueTask<EtagParam?> BindAsync(HttpContext context, ParameterInfo parameter)
+    {
+
+        return ValueTask.FromResult<EtagParam?>(new EtagParam
+        {
+            ETag = context.Request.Headers.IfMatch.FirstOrDefault() 
+        });
+    }
+}       

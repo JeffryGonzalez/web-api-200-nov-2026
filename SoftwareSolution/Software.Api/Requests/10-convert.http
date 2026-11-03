@@ -1,0 +1,69 @@
+﻿@Software.Api_HostAddress = https://localhost:9000
+@Identity_HostAddress = http://localhost:9069/software
+
+
+###
+
+# Get a token from the mock OAuth2 server, which is running in the AppHost.
+# "code" isn't really part of this grant. It's what the mock's config matches on to
+# decide who you are: alice, earl, mary or sue (AppHost/MockOauth2/settings/config.json).
+# mary and sue are managers, earl isn't, and alice has no roles.
+# take a look at the pre-populated users: AppHost\MockOauth2\settings\config.json
+# For this section, you are Mary, and she has the manager and softwarecenter roles.
+# @name login
+POST {{Identity_HostAddress}}/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&client_id=software&client_secret=secret&code=mary
+
+###
+
+# Run the login request above first. Change its code to see a 403.
+# @name newVendor
+POST {{Software.Api_HostAddress}}/vendors
+Authorization: Bearer {{login.response.body.$.access_token}}
+Content-Type: application/json
+
+{
+  "name": "Oracle",
+  "url": "https://www.hypertheory.com",
+  "pointOfContact": {
+    "name": "Stacey",
+    "email": "stacey@example.com",
+    "phone": "555-1212"
+  }
+}
+
+###
+
+# Run the request above first. Read the vendor.
+# @name getVendor
+GET {{Software.Api_HostAddress}}{{newVendor.response.headers.Location}}
+
+###
+
+# Get all the vendors. You should see the one you just created.
+# @name getVendors  
+GET {{Software.Api_HostAddress}}/vendors    
+
+
+###
+
+# Send this twice. The second one gets a 412, because the first changed the version.
+PUT {{Software.Api_HostAddress}}{{newVendor.response.headers.Location}}/point-of-contact
+Authorization: Bearer {{login.response.body.$.access_token}}
+Content-Type: application/json
+
+{
+  "name": "Jill",
+  "email": "jill@example.com"
+}
+
+
+###
+
+# Expect a 403. Sue didn't create this vendor.
+DELETE {{Software.Api_HostAddress}}{{newVendor.response.headers.Location}}
+Authorization: Bearer {{login.response.body.$.access_token}}
+
+###
