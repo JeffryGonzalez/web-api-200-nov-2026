@@ -77,7 +77,7 @@ public class VendorsFixture : IAsyncLifetime
     }
 
     [Then("The response maps to the request")]
-    public async Task TheResponseMaps()
+    public async Task ThenTheResponseMaps()
     {
         Assert.NotNull(_request);
         Assert.NotNull(_response);

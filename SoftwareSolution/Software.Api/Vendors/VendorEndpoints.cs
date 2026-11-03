@@ -3,6 +3,7 @@ using JasperFx.CodeGeneration.Frames;
 using Marten;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Software.Api.Infra;
 using Software.Api.Vendors.Operations;
 using System.Reflection;
 
@@ -23,32 +24,18 @@ public static class VendorEndpoints
         vendors.MapGet("", GetCollection.GetVendorsAsync);
 
         vendorManagersEndpoints.MapPost("", AddVendorAsync);
-        vendorManagersEndpoints.MapDelete("/{id:guid}", DeleteAsync).AddEndpointFilter(async (context, next) =>
-        {
-            if (!context.HttpContext.Request.Headers.TryGetValue("If-Match", out var ifMatch))
-            {
-                context.HttpContext.Response.StatusCode = StatusCodes.Status428PreconditionRequired;
-                return Results.StatusCode(StatusCodes.Status428PreconditionRequired);
-            }
-  
-            
 
-            return await   next(context);
-        });
-        vendorManagersEndpoints.MapPut("/{id:guid}/point-of-contact", ReplacePointOfContactAsync);
+        vendorManagersEndpoints.MapDelete("/{id:guid}", DeleteAsync).AddEndpointFilter<MustHaveIfMatch>();
+        vendorManagersEndpoints.MapPut("/{id:guid}/point-of-contact", ReplacePointOfContactAsync).AddEndpointFilter<MustHaveIfMatch>();
         return routes;
     }
 
     private static async Task<Results<NoContent, StatusCodeHttpResult>> DeleteAsync(Guid id, IDocumentSession session,
-        [FromHeader(Name ="If-Match")] string? ifMatch,
+        [FromHeader(Name ="If-Match")] string ifMatch,
         ILookupRequestingUsers userLookups
         )
     {
 
-        if(ifMatch is null)
-        {
-            return TypedResults.StatusCode(StatusCodes.Status428PreconditionRequired);
-        }
         // only the person that created it can delete it - otherwise 403
         var vendor = await session.LoadAsync<VendorEntity>(id);
         // if the vendor does not exist, what should we return?
@@ -72,15 +59,12 @@ public static class VendorEndpoints
 
     private static async Task<Results<NoContent, StatusCodeHttpResult, NotFound>> ReplacePointOfContactAsync(
         Guid id,
+        //VendorEntity vendor,
         IDocumentSession session,
-        [FromHeader(Name = "If-Match")] string? ifMatch,
+        [FromHeader(Name = "If-Match")] string ifMatch,
         VendorPointOfContact request)
     {
-        if (ifMatch is null)
-        {
-            return TypedResults.StatusCode(StatusCodes.Status428PreconditionRequired);
 
-        }
         // added a header, but wrong format
         if (!Guid.TryParse(ifMatch.Trim('"'), out var version))
         {
@@ -133,7 +117,7 @@ public static class VendorEndpoints
 
     private static async Task<Results<Ok<VendorDetailsModel>, NotFound, StatusCodeHttpResult>> GetByIdAsync(
     Guid id,
-    //[FromHeader(Name = "If-None-Match")] string? ifNoneMatch,
+   // [FromHeader(Name = "If-None-Match")] string? ifNoneMatch,
     EtagParam ifNoneMatch,
     HttpResponse httpResponse,
     IDocumentSession session)
@@ -172,7 +156,7 @@ public class EtagParam : IBindableFromHttpContext<EtagParam>
 
     public static ValueTask<EtagParam?> BindAsync(HttpContext context, ParameterInfo parameter)
     {
-
+        
         return ValueTask.FromResult<EtagParam?>(new EtagParam
         {
             ETag = context.Request.Headers.IfMatch.FirstOrDefault() 

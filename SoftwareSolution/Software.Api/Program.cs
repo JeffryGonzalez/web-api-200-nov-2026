@@ -1,4 +1,6 @@
 using Marten;
+using Software.Api.OpenApi;
+using Software.Api.Staff;
 using Software.Api.Vendors;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,11 @@ builder.AddServiceDefaults(); // ServiceDefaults Extension
 builder.Services.AddSingleton<TimeProvider>(sp => TimeProvider.System);
 builder.Services.AddScoped<ILookupRequestingUsers, HttpContextRequestingUserLookup>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin()
+.AllowAnyHeader().AllowAnyMethod().WithExposedHeaders("ETag", "Location")));
+
+builder.Services.Configure<RouteOptions>(options =>
+    options.SetParameterPolicy<StaffNumberConstraint>("staff-number"));
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
     // Keep the token's own claim names ("sub", "role"), instead of mapping them to long URIs.
@@ -41,6 +48,9 @@ builder.Services.AddMarten(options =>
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi(config =>
 {
+    config.AddDocumentTransformer<SoftwareApiDocumentTransformer>();
+    config.AddOperationTransformer<AuthorizeOperationTransformer>();
+    config.AddSchemaTransformer<HonestSchemaTransformer>();
     
 });
     
@@ -53,6 +63,7 @@ app.MapDefaultEndpoints(); // ServiceDefaults - this is mostly health checks.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi(); // GET /openapi/v1.json 
+    app.UseCors();
 }
 
 app.UseHttpsRedirection(); // If a request comes in using http, redirect them back to https. Turn off HTTP.
@@ -64,5 +75,6 @@ app.UseAuthorization(); // Given an identity, who is allowed to do what?
 // nobody* does
 app.MapControllers(); // Need to have the builder.Services.AddController() above, this uses reflection to create your routes.
 app.MapVendorApi();
+app.MapStaffEndpoints();
 // GET /status = StatusController Then call GetTheStatus and return to the user-agent whatever that returns.
 app.Run(); // It is up and running, waiting for someone to call. 

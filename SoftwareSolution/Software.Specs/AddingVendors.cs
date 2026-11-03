@@ -25,7 +25,7 @@ public class AddingANewVendor(VendorsFixture fixture)
                 Email = "skg@aol.com"
             }
         });
-        await fixture.TheResponseMaps();
+        await fixture.ThenTheResponseMaps();
 
 
     }

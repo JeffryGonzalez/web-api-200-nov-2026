@@ -1,3 +1,4 @@
+using Software.Api.Infra;
 using System.ComponentModel.DataAnnotations;
 
 namespace Software.Api.Vendors;
@@ -11,11 +12,14 @@ public record VendorDetailsModel
     public required VendorPointOfContact PointOfContact { get; init; }
 }
 
-public record VendorPointOfContact
+[AtLeastOneOf("Email", "Phone")]
+public record VendorPointOfContact //: IValidatableObject
 {
+    [Required]
     public required string Name { get; init; }
     public string Email { get; init; } = string.Empty;
     public string Phone { get; init;  } = string.Empty;
+
 }
 
 public record VendorCreateModel

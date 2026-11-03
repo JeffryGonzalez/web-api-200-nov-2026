@@ -15,10 +15,16 @@ var identity = builder.AddContainer("identity", "ghcr.io/navikt/mock-oauth2-serv
     .WithEnvironment("JSON_CONFIG_PATH", "/app/resources/software/settings/config.json")
     .WithLifetime(ContainerLifetime.Persistent);
 
+// TODO: Show the endpoint url
 var scalar = builder.AddScalarApiReference(options =>
 {
     options.PreferHttpsEndpoint = true;
     options.AllowSelfSignedCertificates = true;
+    options.DisableDefaultProxy();
+    options.AddPreferredSecuritySchemes("oauth2")
+        .AddAuthorizationCodeFlow("oauth2", flow => flow.WithClientId("software").WithClientSecret("secret").WithSelectedScopes(["openid"]));
+        
+    
 
 }).WithHttpEndpoint(port: 9099, name: "http");
 

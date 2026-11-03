@@ -7,9 +7,14 @@
     <UserSecretsId>24adbc4d-4d39-435d-b227-a0ca4e0b8e7c</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="Requests\10-convert.http" />
-  </ItemGroup>
+	<PropertyGroup>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+		<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Remove="$(CompilerGeneratedFilesOutputPath)/**/*.cs" />
+	</ItemGroup>
+ 
 
   <ItemGroup>
     <PackageReference Include="Aspire.Npgsql" Version="13.6.4" />

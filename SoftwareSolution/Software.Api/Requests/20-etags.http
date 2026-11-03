@@ -70,6 +70,6 @@ If-Match: "{{getVendor.response.headers.ETag}}"
 # Will fail precondition, because the ETag is stale.
 DELETE {{Software.Api_HostAddress}}{{newVendor.response.headers.Location}}
 Authorization: Bearer {{login.response.body.$.access_token}}
-If-Match: "{{getVendor.response.headers.ETag}}"
+If-Match: "{{newVendor.response.headers.ETag}}"
 
 ###
