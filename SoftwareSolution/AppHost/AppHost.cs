@@ -2,8 +2,16 @@ using Scalar.Aspire;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+var mappingsPath = Path.Combine(Directory.GetCurrentDirectory(), "__admin", "mappings");
+
+var wireMock = builder.AddWireMock("purchasing-vendors")
+    .WithHttpEndpoint(9098)
+    .WithMappingsPath(mappingsPath)
+    .WithWatchStaticMappings()
+    .WithLifetime(ContainerLifetime.Persistent);
+
 // I don't like this usually - I'd use this as a stepping stone, much better to have a "responder" (but local)
-var externalApi = builder.AddExternalService("purchasing-vendors", "https://theoria.hypertheory-labs.com");
+// var externalApi = builder.AddExternalService("purchasing-vendors", "https://theoria.hypertheory-labs.com");
 var pgServer = builder.AddPostgres("postgres")
     .WithLifetime(ContainerLifetime.Persistent)
     .WithImageTag("17"); // make this as close to version you are using in prod as you can (dev/prod parity);
@@ -30,12 +38,13 @@ var scalar = builder.AddScalarApiReference(options =>
 
 }).WithHttpEndpoint(port: 9099, name: "http");
 var licenseApi = builder.AddProject<Projects.LicenseProcessing_Api>("licenseprocessing-api");
-
+var catalogApi = builder.AddProject<Projects.Catalog_Api>("catalog-api");
 var softwareApi = builder.AddProject<Projects.Software_Api>("software-api")
     .WithReference(softwareDb)
-    .WithReference(externalApi)
+    .WithReference(wireMock)
     .WaitFor(softwareDb)
     .WithReference(licenseApi)
+    
     .WaitFor(licenseApi)
     .WaitFor(identity)
     // Becomes the configuration key Authentication:Schemes:Bearer:Authority in the API.
@@ -44,6 +53,12 @@ var softwareApi = builder.AddProject<Projects.Software_Api>("software-api")
 
 scalar.WithApiReference(softwareApi);
 
-
+var gateway = builder.AddProject<Projects.Gateway>("gateway-api")
+    .WithReference(softwareApi)
+    .WithReference(licenseApi)
+    .WithReference(catalogApi)
+    .WithChildRelationship(softwareApi)
+    .WithChildRelationship(licenseApi)
+    .WithChildRelationship(catalogApi); 
 
 builder.Build().Run();

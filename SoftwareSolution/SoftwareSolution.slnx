@@ -1,5 +1,7 @@
 <Solution>
   <Project Path="AppHost/AppHost.csproj" />
+  <Project Path="Catalog.Api/Catalog.Api.csproj" />
+  <Project Path="Gateway/Gateway.csproj" />
   <Project Path="LicenseProcessing.Api/LicenseProcessing.Api.csproj" />
   <Project Path="ServiceDefaults/ServiceDefaults.csproj" />
   <Project Path="Software.Api/Software.Api.csproj" />
