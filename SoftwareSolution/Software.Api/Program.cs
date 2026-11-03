@@ -1,4 +1,6 @@
 using Marten;
+using Software.Api.HttpClients;
+using Software.Api.Licenses;
 using Software.Api.OpenApi;
 using Software.Api.Staff;
 using Software.Api.Vendors;
@@ -7,12 +9,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddValidation();
+builder.Services.AddProblemDetails();
+
 builder.AddServiceDefaults(); // ServiceDefaults Extension
 builder.Services.AddSingleton<TimeProvider>(sp => TimeProvider.System);
 builder.Services.AddScoped<ILookupRequestingUsers, HttpContextRequestingUserLookup>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyOrigin()
 .AllowAnyHeader().AllowAnyMethod().WithExposedHeaders("ETag", "Location")));
+
+
 
 builder.Services.Configure<RouteOptions>(options =>
     options.SetParameterPolicy<StaffNumberConstraint>("staff-number"));
@@ -53,10 +59,16 @@ builder.Services.AddOpenApi(config =>
     config.AddSchemaTransformer<HonestSchemaTransformer>();
     
 });
-    
+
+
+builder.Services.AddHttpClient<PurchasingApi>(client =>
+{
+    client.BaseAddress = new Uri("https+http://purchasing-vendors");
+});
 
 // Above this line is host and service configuration - can't do that after you build the app.
 var app = builder.Build();
+app.UseStatusCodePages(); // Use problem details for stuff like a 404, etc.
 app.MapDefaultEndpoints(); // ServiceDefaults - this is mostly health checks.
 
 // Configure the HTTP request pipeline.
@@ -76,5 +88,6 @@ app.UseAuthorization(); // Given an identity, who is allowed to do what?
 app.MapControllers(); // Need to have the builder.Services.AddController() above, this uses reflection to create your routes.
 app.MapVendorApi();
 app.MapStaffEndpoints();
+app.MapLicenseEndpoints();
 // GET /status = StatusController Then call GetTheStatus and return to the user-agent whatever that returns.
 app.Run(); // It is up and running, waiting for someone to call. 

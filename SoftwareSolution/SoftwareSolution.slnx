@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="AppHost/AppHost.csproj" />
+  <Project Path="LicenseProcessing.Api/LicenseProcessing.Api.csproj" />
   <Project Path="ServiceDefaults/ServiceDefaults.csproj" />
   <Project Path="Software.Api/Software.Api.csproj" />
   <Project Path="Software.Specs/Software.Specs.csproj" Id="7e029a30-cd03-4978-a54f-af2f492c7324" />

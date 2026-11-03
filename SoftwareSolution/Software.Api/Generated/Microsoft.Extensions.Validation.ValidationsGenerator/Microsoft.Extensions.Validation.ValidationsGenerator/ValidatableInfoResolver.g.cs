@@ -70,6 +70,60 @@ namespace Microsoft.Extensions.Validation.Generated
         public bool TryGetValidatableTypeInfo(global::System.Type type, [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out global::Microsoft.Extensions.Validation.IValidatableInfo? validatableInfo)
         {
             validatableInfo = null;
+            if (type == typeof(global::Software.Api.Licenses.SoftwareVersion))
+            {
+                validatableInfo = new GeneratedValidatableTypeInfo(
+                    type: typeof(global::Software.Api.Licenses.SoftwareVersion),
+                    members: [
+                        new GeneratedValidatablePropertyInfo(
+                            containingType: typeof(global::Software.Api.Licenses.SoftwareVersion),
+                            propertyType: typeof(int),
+                            name: "Major",
+                            displayName: "Major"
+                        ),
+                        new GeneratedValidatablePropertyInfo(
+                            containingType: typeof(global::Software.Api.Licenses.SoftwareVersion),
+                            propertyType: typeof(int),
+                            name: "Minor",
+                            displayName: "Minor"
+                        ),
+                        new GeneratedValidatablePropertyInfo(
+                            containingType: typeof(global::Software.Api.Licenses.SoftwareVersion),
+                            propertyType: typeof(int),
+                            name: "Patch",
+                            displayName: "Patch"
+                        ),
+                    ]
+                );
+                return true;
+            }
+            if (type == typeof(global::Software.Api.Licenses.License))
+            {
+                validatableInfo = new GeneratedValidatableTypeInfo(
+                    type: typeof(global::Software.Api.Licenses.License),
+                    members: [
+                        new GeneratedValidatablePropertyInfo(
+                            containingType: typeof(global::Software.Api.Licenses.License),
+                            propertyType: typeof(string),
+                            name: "Product",
+                            displayName: "Product"
+                        ),
+                        new GeneratedValidatablePropertyInfo(
+                            containingType: typeof(global::Software.Api.Licenses.License),
+                            propertyType: typeof(global::Software.Api.Licenses.SoftwareVersion),
+                            name: "Version",
+                            displayName: "Version"
+                        ),
+                        new GeneratedValidatablePropertyInfo(
+                            containingType: typeof(global::Software.Api.Licenses.License),
+                            propertyType: typeof(int),
+                            name: "Seats",
+                            displayName: "Seats"
+                        ),
+                    ]
+                );
+                return true;
+            }
             if (type == typeof(global::Software.Api.Vendors.VendorPointOfContact))
             {
                 validatableInfo = new GeneratedValidatableTypeInfo(
@@ -127,7 +181,7 @@ namespace Microsoft.Extensions.Validation.Generated
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Validation.ValidationsGenerator, Version=10.0.14.0, Culture=neutral, PublicKeyToken=adb9793829ddae60", "10.0.14.0")]
     file static class GeneratedServiceCollectionExtensions
     {
-        [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "tIQp2+DaKfEfC3TDIpMH+MgAAABQcm9ncmFtLmNz")]
+        [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "Wz2WoSmMd1hP9Js2C5Pd4AUBAABQcm9ncmFtLmNz")]
         public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValidation(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.Action<global::Microsoft.Extensions.Validation.ValidationOptions>? configureOptions = null)
         {
             // Use non-extension method to avoid infinite recursion.

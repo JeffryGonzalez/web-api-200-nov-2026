@@ -2,6 +2,8 @@ using Scalar.Aspire;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+// I don't like this usually - I'd use this as a stepping stone, much better to have a "responder" (but local)
+var externalApi = builder.AddExternalService("purchasing-vendors", "https://theoria.hypertheory-labs.com");
 var pgServer = builder.AddPostgres("postgres")
     .WithLifetime(ContainerLifetime.Persistent)
     .WithImageTag("17"); // make this as close to version you are using in prod as you can (dev/prod parity);
@@ -27,16 +29,21 @@ var scalar = builder.AddScalarApiReference(options =>
     
 
 }).WithHttpEndpoint(port: 9099, name: "http");
-
+var licenseApi = builder.AddProject<Projects.LicenseProcessing_Api>("licenseprocessing-api");
 
 var softwareApi = builder.AddProject<Projects.Software_Api>("software-api")
     .WithReference(softwareDb)
+    .WithReference(externalApi)
     .WaitFor(softwareDb)
+    .WithReference(licenseApi)
+    .WaitFor(licenseApi)
     .WaitFor(identity)
     // Becomes the configuration key Authentication:Schemes:Bearer:Authority in the API.
     .WithEnvironment("Authentication__Schemes__Bearer__Authority",
         () => identity.Resource.GetEndpoint("http").Url + "/software");
 
 scalar.WithApiReference(softwareApi);
+
+
 
 builder.Build().Run();

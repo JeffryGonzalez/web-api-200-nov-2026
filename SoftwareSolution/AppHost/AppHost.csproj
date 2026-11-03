@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LicenseProcessing.Api\LicenseProcessing.Api.csproj" />
     <ProjectReference Include="..\Software.Api\Software.Api.csproj" />
   </ItemGroup>
 
