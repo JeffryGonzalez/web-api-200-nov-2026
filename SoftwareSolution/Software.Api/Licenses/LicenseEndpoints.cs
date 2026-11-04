@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Software.Api.HttpClients;
 
 namespace Software.Api.Licenses;
 
@@ -16,7 +17,7 @@ public record License
     public LicenseType Type { get; init; }
     public SoftwareVersion? Version { get; init; }
     public DateOnly Expires { get; init; }
-    [JsonPropertyName("seat_count"), Range(1, 100)]
+  //  [JsonPropertyName("seat_count"), Range(1, 100)]
     public int Seats { get; init; } = 1;
 }
 
@@ -48,8 +49,11 @@ public static class LicenseEndpoints
     }
 
     // It doesn't save anything. It sends back what it understood.
-    private static Ok<License> AddLicense(License request)
+    private static async Task<Ok<License>> AddLicense(License request, LicenseApi api)
     {
+
+            var paymentRequest = await api.SubmitForPayment(request.Product, request.Seats);
+        
         return TypedResults.Ok(request);
     }
 }

@@ -17,7 +17,7 @@ public class PurchasingApi(HttpClient client)
 
         var itemsPage = await response.Content.ReadFromJsonAsync<CatalogPageItem>();
 
-        return itemsPage?.Items?.Count ?? throw new Exception("no count property, whatever...");
+        return itemsPage?.Total?? throw new Exception("no count property, whatever...");
 
         
     }
@@ -28,6 +28,6 @@ public class PurchasingApi(HttpClient client)
 
 public record CatalogPageItem
 {
-    public List<object>? Items { get; set; }
+    public int Total { get; init; } 
 
 }

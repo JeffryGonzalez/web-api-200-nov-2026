@@ -65,6 +65,10 @@ builder.Services.AddHttpClient<PurchasingApi>(client =>
 {
     client.BaseAddress = new Uri("https+http://purchasing-vendors");
 });
+builder.Services.AddHttpClient<LicenseApi>(client =>
+{
+    client.BaseAddress = new Uri("https+http://licenseprocessing-api");
+});
 
 // Above this line is host and service configuration - can't do that after you build the app.
 var app = builder.Build();

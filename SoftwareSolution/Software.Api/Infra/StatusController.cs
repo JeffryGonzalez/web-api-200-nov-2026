@@ -11,7 +11,16 @@ public class StatusController(PurchasingApi apiClient) : ControllerBase
     [HttpGet("/status")]
     public async Task<ActionResult> GetTheStatus(CancellationToken token)
     {
-        var count = await apiClient.GetApprovedVendorCountAsync(token);
+        int count = -1;
+        try
+        {
+            count = await apiClient.GetApprovedVendorCountAsync(token);
+        }
+        catch (Exception)
+        {
+
+           
+        }
       
         var response = new StatusResponseMessage
         {
