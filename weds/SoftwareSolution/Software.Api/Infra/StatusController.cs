@@ -4,13 +4,14 @@ using Software.Api.HttpClients;
 namespace Software.Api.Infra;
 
 [ApiController]
-public class StatusController(PurchasingApi apiClient) : ControllerBase
+public class StatusController(IHandleThePurchaseApi apiClient) : ControllerBase
 {
 
     // GET /status
     [HttpGet("/status")]
     public async Task<ActionResult> GetTheStatus(CancellationToken token)
     {
+        // Chaos Monkey stuff - If the other API fails - and it will - what are you going to do?
         int count = -1;
         try
         {

@@ -22,13 +22,14 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
-app.MapPost("/requests", async (LicensePaymentRequest request) => {
-    var total = 0.0M;
-    foreach(var seat in Enumerable.Range(1, request.Seats))
+app.MapPost("/requests", async (LicensePaymentRequest request) =>
 {
-    await Task.Delay(300);
-    total += 99.0M;
-}   
+    var total = 0.0M;
+    foreach (var seat in Enumerable.Range(1, request.Seats))
+    {
+        await Task.Delay(300);
+        total += 99.0M;
+    }
 
     return new Receipt(request.Product, request.Seats, total);
 });

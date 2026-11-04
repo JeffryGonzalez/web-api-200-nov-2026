@@ -1,6 +1,6 @@
 ﻿namespace Software.Api.HttpClients;
 
-public class PurchasingApi(HttpClient client)
+public class PurchasingApi(HttpClient client) : IHandleThePurchaseApi
 {
 
     // everything we do with that API happens here. ALL OF IT.
@@ -17,9 +17,9 @@ public class PurchasingApi(HttpClient client)
 
         var itemsPage = await response.Content.ReadFromJsonAsync<CatalogPageItem>();
 
-        return itemsPage?.Total?? throw new Exception("no count property, whatever...");
+        return itemsPage?.Total ?? throw new Exception("no count property, whatever...");
 
-        
+
     }
 }
 

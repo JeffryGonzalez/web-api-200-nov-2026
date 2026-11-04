@@ -65,6 +65,11 @@ builder.Services.AddHttpClient<PurchasingApi>(client =>
 {
     client.BaseAddress = new Uri("https+http://purchasing-vendors");
 });
+
+builder.Services.AddScoped<IHandleThePurchaseApi>(sp =>
+{
+    return sp.GetRequiredService<PurchasingApi>();
+});
 builder.Services.AddHttpClient<LicenseApi>(client =>
 {
     client.BaseAddress = new Uri("https+http://licenseprocessing-api");

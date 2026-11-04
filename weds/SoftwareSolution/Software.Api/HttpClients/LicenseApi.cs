@@ -2,9 +2,14 @@
 
 namespace Software.Api.HttpClients;
 
-public class LicenseApi(HttpClient httpClient)
+
+public interface IHandleTheLicenceApi
 {
-    internal async Task<Receipt?> SubmitForPayment(string product, int seats)
+    public Task<Receipt?> SubmitForPayment(string product, int seats);
+}
+public class LicenseApi(HttpClient httpClient) : IHandleTheLicenceApi
+{
+    public async Task<Receipt?> SubmitForPayment(string product, int seats)
     {
         var response = await httpClient.PostAsJsonAsync("/requests", value: new LicensePaymentRequest(product, seats));
         response.EnsureSuccessStatusCode();

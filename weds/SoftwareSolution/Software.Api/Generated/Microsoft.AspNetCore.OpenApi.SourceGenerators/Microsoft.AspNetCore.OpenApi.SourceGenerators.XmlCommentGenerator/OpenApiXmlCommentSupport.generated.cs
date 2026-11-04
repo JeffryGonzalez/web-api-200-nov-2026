@@ -594,7 +594,7 @@ namespace Microsoft.AspNetCore.OpenApi.Generated
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.AspNetCore.OpenApi.SourceGenerators, Version=10.0.14.0, Culture=neutral, PublicKeyToken=adb9793829ddae60", "10.0.14.0")]
     file static class GeneratedServiceCollectionExtensions
     {
-        [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "OXbrrUnJJGcsCscAdBoYQ/8HAABQcm9ncmFtLmNz")]
+        [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "UZpCemeGXaeG9NyHtMHcRP8HAABQcm9ncmFtLmNz")]
         public static IServiceCollection AddOpenApi(this IServiceCollection services, Action<OpenApiOptions> configureOptions)
         {
             return services.AddOpenApi("v1", options =>
