@@ -2,6 +2,7 @@ using Scalar.Aspire;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+// use Path.Combine, etc. to build paths to files, because it accomodates the OS where this is running.
 var mappingsPath = Path.Combine(Directory.GetCurrentDirectory(), "__admin", "mappings");
 
 var wireMock = builder.AddWireMock("purchasing-vendors")
@@ -39,12 +40,12 @@ var scalar = builder.AddScalarApiReference(options =>
 }).WithHttpEndpoint(port: 9099, name: "http");
 var licenseApi = builder.AddProject<Projects.LicenseProcessing_Api>("licenseprocessing-api");
 var catalogApi = builder.AddProject<Projects.Catalog_Api>("catalog-api");
+
 var softwareApi = builder.AddProject<Projects.Software_Api>("software-api")
     .WithReference(softwareDb)
     .WithReference(wireMock)
     .WaitFor(softwareDb)
     .WithReference(licenseApi)
-    
     .WaitFor(licenseApi)
     .WaitFor(identity)
     // Becomes the configuration key Authentication:Schemes:Bearer:Authority in the API.

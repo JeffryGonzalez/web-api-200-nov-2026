@@ -1,0 +1,16 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+@Gateway.Api_HostAddress = https://localhost:7070
+
+###
+GET {{Gateway.Api_HostAddress}}/api/software/vendors
+# remove the "/api/software" part and send this to the software.api
+
+
+###
+GET {{Gateway.Api_HostAddress}}/api/software/status
+
+###
+GET {{Gateway.Api_HostAddress}}/api/software/vendors/74c00f17-7f84-4fc1-9c3a-e29604f92cd7
+
+###
+GET {{Gateway.Api_HostAddress}}/api/software/vendors/54c00f17-7f84-4fc1-9c3a-e29604f92cd7/catalog

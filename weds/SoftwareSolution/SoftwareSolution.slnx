@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="AppHost/AppHost.csproj" />
+  <Project Path="Catalog.Api/Catalog.Api.csproj" />
+  <Project Path="Common/Common.csproj" Id="8c14e059-00f4-4abe-9b74-626fa47a786e" />
+  <Project Path="Gateway/Gateway.csproj" />
+  <Project Path="LicenseProcessing.Api/LicenseProcessing.Api.csproj" />
+  <Project Path="ServiceDefaults/ServiceDefaults.csproj" />
+  <Project Path="Software.Api/Software.Api.csproj" />
+  <Project Path="Software.Specs/Software.Specs.csproj" Id="7e029a30-cd03-4978-a54f-af2f492c7324" />
+  <Project Path="Software.Tests/Software.Tests.csproj" Id="d398115f-523c-40f1-b340-4f2657821616" />
+</Solution>

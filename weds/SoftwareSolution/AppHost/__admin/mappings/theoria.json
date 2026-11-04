@@ -1,0 +1,71 @@
+{
+  "Guid": "873d495f-940e-4b86-a1f4-4f0fc7be8b8b",
+  "Request": {
+    "Path": "/clerk-records/purchasing/vendors",
+    "Methods": [
+      "GET"
+    ]
+  },
+  "Response": {
+    "StatusCode": 200,
+    "Headers": {
+      "Content-Type": "application/json"
+    },
+    "Delay": 300,
+    "BodyAsJson": {
+      "items": [
+        {
+          "id": "7ff65213-fe55-5938-02e9-35c599b82f4d",
+          "name": "Jeff Was Here & Gone",
+          "taxIdLast4": "2290",
+          "registeredOn": "2021-06-01",
+          "contactEmail": "office@bilyeupaving.example",
+          "contactPhone": null
+        },
+        {
+          "id": "06ccbc7e-be21-9959-4cef-f40fd2784d8f",
+          "name": "Dutcher Culvert Supply",
+          "taxIdLast4": "7731",
+          "registeredOn": "2018-09-24",
+          "contactEmail": "orders@dutchersupply.example",
+          "contactPhone": null
+        },
+        {
+          "id": "4c54de18-93fd-d4f7-4108-583e4bfcc669",
+          "name": "Halstead Meter Services",
+          "taxIdLast4": "1183",
+          "registeredOn": "2016-04-04",
+          "contactEmail": null,
+          "contactPhone": "330-555-0192"
+        },
+        {
+          "id": "4c54de18-93fd-d4f7-4108-583e4bfcc669",
+          "name": "Halstead Meter Services",
+          "taxIdLast4": "1183",
+          "registeredOn": "2016-04-04",
+          "contactEmail": null,
+          "contactPhone": "330-555-0192"
+        },
+        {
+          "id": "4c54de18-93fd-d4f7-4108-583e4bfcc669",
+          "name": "Halstead Meter Services",
+          "taxIdLast4": "1183",
+          "registeredOn": "2016-04-04",
+          "contactEmail": null,
+          "contactPhone": "330-555-0192"
+        },
+        {
+          "id": "4c54de18-93fd-d4f7-4108-583e4bfcc669",
+          "name": "Halstead Meter Services",
+          "taxIdLast4": "1183",
+          "registeredOn": "2016-04-04",
+          "contactEmail": null,
+          "contactPhone": "330-555-0192"
+        }
+      ],
+      "page": 1,
+      "pageSize": 25,
+      "total": 42
+    }
+  }
+}

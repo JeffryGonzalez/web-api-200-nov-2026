@@ -1,0 +1,24 @@
+
+@Software.Api_HostAddress = https://localhost:7070/api/software
+
+
+###
+POST {{Software.Api_HostAddress}}/licenses
+Content-Type: application/json
+
+{
+  "product": "Call of Duty",
+  "seats": 59
+}
+
+###
+# public record License
+# {
+#     [Required]
+#     public string Product { get; init; } = string.Empty;
+#     public LicenseType Type { get; init; }
+#     public SoftwareVersion? Version { get; init; }
+#     public DateOnly Expires { get; init; }
+#     [JsonPropertyName("seat_count"), Range(1, 100)]
+#     public int Seats { get; init; } = 1;
+# }

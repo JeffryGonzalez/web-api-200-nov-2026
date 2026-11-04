@@ -1,0 +1,55 @@
+{
+  "loginPagePath": "/app/resources/software/html/login.html",
+  "interactiveLogin": true,
+  "httpServer": "MockWebServerWrapper",
+  "tokenCallbacks": [
+    {
+      "issuerId": "software",
+      "requestMappings": [
+        {
+          "requestParam": "code",
+          "match": "alice",
+          "claims": {
+            "sub": "alice",
+            "aud": "software-api"
+          }
+        },
+        {
+          "requestParam": "code",
+          "match": "earl",
+          "claims": {
+            "sub": "earl",
+            "aud": "software-api",
+            "role": [
+              "SoftwareCenter"
+            ]
+          }
+        },
+        {
+          "requestParam": "code",
+          "match": "mary",
+          "claims": {
+            "sub": "mary",
+            "aud": "software-api",
+            "role": [
+              "SoftwareCenter",
+              "Manager"
+            ]
+          }
+        },
+        {
+          "requestParam": "code",
+          "match": "sue",
+          "claims": {
+            "sub": "sue",
+            "aud": "software-api",
+            "role": [
+              "SoftwareCenter",
+              "Manager"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
