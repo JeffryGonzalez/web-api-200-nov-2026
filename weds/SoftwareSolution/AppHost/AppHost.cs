@@ -19,6 +19,8 @@ var pgServer = builder.AddPostgres("postgres")
 
 var softwareDb = pgServer.AddDatabase("software");
 
+var licenseDb = pgServer.AddDatabase("licensing");
+
 // A mock OAuth2 server that pretends to be an identity provider. Great for development.
 var identity = builder.AddContainer("identity", "ghcr.io/navikt/mock-oauth2-server:3.0.1")
     .WithHttpEndpoint(9069, 8080)
@@ -38,7 +40,8 @@ var scalar = builder.AddScalarApiReference(options =>
     
 
 }).WithHttpEndpoint(port: 9099, name: "http");
-var licenseApi = builder.AddProject<Projects.LicenseProcessing_Api>("licenseprocessing-api");
+var licenseApi = builder.AddProject<Projects.LicenseProcessing_Api>("licenseprocessing-api")
+    .WithReference(licenseDb);
 var catalogApi = builder.AddProject<Projects.Catalog_Api>("catalog-api");
 
 var softwareApi = builder.AddProject<Projects.Software_Api>("software-api")

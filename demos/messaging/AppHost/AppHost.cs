@@ -23,9 +23,11 @@ builder.AddProject<Projects.ApiTwo>("two")
     .WaitFor(dbTwo);
 
 builder.AddProject<Projects.PlainListener>("listener")
+    .WithExplicitStart()
     .WithReplicas(2)
     .WithReference(natsTransport)
     .WaitFor(natsTransport)
+    
     .WaitFor(apiOne); // apiOne creates the "PEOPLE" stream
 
 builder.AddProject<Projects.LateComer>("late-comer")

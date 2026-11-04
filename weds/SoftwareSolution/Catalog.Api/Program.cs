@@ -2,6 +2,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 var app = builder.Build();
 
+
+// Since vendorId isn't on the route as a route param, it will be found as
+// a queryString param - e.g. /catalog?vendorId={someGuid}
 app.MapGet("/catalog", (Guid vendorId) =>
 {
     var items = new List<CatalogItem>()

@@ -51,9 +51,16 @@ public static class LicenseEndpoints
     // It doesn't save anything. It sends back what it understood.
     private static async Task<Ok<License>> AddLicense(License request, LicenseApi api)
     {
+        // As part of adding a license HERE I have to send it THERE (inside vs. outside)
 
-            var paymentRequest = await api.SubmitForPayment(request.Product, request.Seats);
-        
+        var paymentRequest = await api.SubmitForPayment(request.Product, request.Seats);
+        // that api (license api) changed it's world (state) based on this.
+        // What do I do with that payment Request? More later.
+        // write the paymentreceipt to the database along with the license, etc.
+
+        // Oh, I probably want to write something to a database, etc.
+        // but what if this fails? We didn't write it to our database?
+        // I cannot send this until the above completes.
         return TypedResults.Ok(request);
     }
 }

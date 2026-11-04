@@ -16,7 +16,7 @@ POST https://localhost:7131/math
 Content-Type: application/json
 
 {
- "numbers": [1, 2, 3, 4, 5, 6, 7]
+ "numbers": [1, 2, 3, 4, 5, 6, 7, 18, 22, 4]
 }
 
 
@@ -25,16 +25,16 @@ POST https://localhost:7131/users
 Content-Type: application/json
 
 {
- "name": "Dougie"
+ "name": "Brandon"
 }
 
 ###
 GET https://localhost:7204/users
 
 ###
-PUT https://localhost:7131/users/a11fbee3-0fb8-4a9b-aadc-83daf5fba11b/name 
+PUT https://localhost:7131/users/b5ccc334-2e25-4156-97d2-1c7a9698a582/name 
 Content-Type: application/json 
 
 {
-    "name": "Dougie"
+    "name": "Howard"
 }
