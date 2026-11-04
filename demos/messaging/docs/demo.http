@@ -1,0 +1,40 @@
+
+# 7131 is ApiOne and 7204 is ApiTwo
+POST https://localhost:7131/messages
+Content-Type: application/json
+
+{
+  "message": "Is This Thing On?"
+}
+
+
+### 
+
+# ApiTwo will sum up the numbers - 
+
+POST https://localhost:7131/math
+Content-Type: application/json
+
+{
+ "numbers": [1, 2, 3, 4, 5, 6, 7]
+}
+
+
+### 
+POST https://localhost:7131/users 
+Content-Type: application/json
+
+{
+ "name": "Dougie"
+}
+
+###
+GET https://localhost:7204/users
+
+###
+PUT https://localhost:7131/users/a11fbee3-0fb8-4a9b-aadc-83daf5fba11b/name 
+Content-Type: application/json 
+
+{
+    "name": "Dougie"
+}
